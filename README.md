@@ -126,10 +126,10 @@ If this parameter is given, the visual feedback will be surpressed - meaning you
 
 ## Contribute ##
 
-See How [to contribute](https://github.com/dbsystel/tracking-tester/CONTRIBUTING.md)
+See How [to contribute](https://github.com/dbsystel/tracking-tester/blob/main/CONTRIBUTING.md)
 
 ## License ##
 
-This project is licensed under [Apache-2.0](https://github.com/dbsystel/tracking-tester/LICENSE)
+This project is licensed under [Apache-2.0](https://github.com/dbsystel/tracking-tester/blob/main/LICENSE)
 
 Copyright 2023 DB Systel GmbH
