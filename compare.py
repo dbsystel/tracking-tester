@@ -66,6 +66,8 @@ class Compare():
                 # if exists, get variable mapping ("readable name")
                 if var_before in var_mapping:
                     pages_before[page_before]["variables"][var_before]['variable_mapping'] = var_mapping[var_before]
+                else:
+                    pages_before[page_before]["variables"][var_before]['variable_mapping'] = "-"
                     
                 # check if the variable exists in state "after"
                 if var_before not in pages_after[page_before]["variables"]:
