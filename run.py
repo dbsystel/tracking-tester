@@ -139,7 +139,9 @@ class TrackTracker:
             compare = Compare()
             
             # TODO: add stop_on_error flag to stop on every error, makes it easier to fix errors
-            self.result = compare.compare(self.result, self.var_mapping)
+            self.result = compare.compare(pages_before=self.result, 
+                                          pages_after=self.original,
+                                          var_mapping=self.var_mapping)
 
             # don't create the excel output when focus page is defined
             if focus is None:
@@ -458,6 +460,7 @@ if __name__ == '__main__':
     args_parser.add_argument('--mode', dest='mode', required=False, type=str, default='test', choices=['test', 'init', 'analyse'], 
                         help='init: initially read the original state, test: compare original state and current state, analyse: analyse test status and create a report')
 
+    # TODO: improve/ease file handling, we don't need original/test folders, we can just assume them from env argument
     args_parser.add_argument('--original', dest='original', required=True, type=str,
                         help='filename that contains original tracked variables in JSON format')
 
