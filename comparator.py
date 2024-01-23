@@ -102,9 +102,6 @@ class Comparator():
         if type(pages) is not dict:
             raise error("[FormatCheck] JSON is not defined as dictionary. " + str(type(pages)))
         
-        if len(pages) <= 0:
-            raise error("[FormatCheck] No elements available in the JSON. " + str(len(pages)))
-
         for page in pages:
             if type(pages[page]) is not dict:
                     raise error("[FormatCheck] Page '" + str(page) + "' is not defined as dictionary. " + str(type(pages[page])))
