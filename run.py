@@ -1,31 +1,32 @@
+#!
 # Copyright 2023 DB Systel GmbH
 # License Apache-2.0
 
 import time
-import sys, urllib3, os
-# from selenium import webdriver
+from datetime import datetime # date time handling
+import sys, os
+
+# selenium
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from seleniumwire import webdriver  # wrapper to get network requests from browser and also modify LaunchRequests in real time (https://stackoverflow.com/questions/31354352/selenium-how-to-inject-execute-a-javascript-in-to-a-page-before-loading-executi)
-import pickle # to save / load cookies
 from pathlib import Path # check if cookie dump exists
 from urllib.parse import urlparse, parse_qs, urldefrag # extract get parameters from url
-import json # export result
 
+import argparse # to get runtime arguments
+
+import pandas as pd # for export to Excel
+import json # for export to JSON
+
+from compare import Compare # small class to compare two dicts
+
+from os import get_terminal_size # get available width in terminal output
+
+# TODO: clean up unsued libs
 # modify requests before rendering of page https://stackoverflow.com/questions/31354352/selenium-how-to-inject-execute-a-javascript-in-to-a-page-before-loading-executi
-from lxml import html
-from lxml.etree import ParserError
-from lxml.html import builder
-
-import argparse
-
-import pandas as pd
-
-from compare import Compare
-
-# to read available width in terminal output
-from os import get_terminal_size
-
-from datetime import datetime
+# from lxml import html
+# from lxml.etree import ParserError
+# from lxml.html import builder
+#import pickle # to save / load cookies
 
 def get_real_type(string: str) -> str:
 
