@@ -155,12 +155,12 @@ class Comparator():
     # Checks the passed JSON object for the correct format and 
     # then if the passed values match what is expected from 
     # the original JSON.
-    def check_json(self, obj_test, obj_mapping) -> dict:
+    def check_json(self, dict_before, dict_after) -> dict:
         
-        if self.check_json_format(obj_test) != True:
+        if self.check_json_format(dict_before) != True:
             raise error("The test was not processed because the format of the test JSON is not passed as expected.")
 
-        obj_result = obj_test.copy()
+        obj_result = dict_before.copy()
 
         self.succeed = 0
         self.failed = 0
@@ -168,7 +168,7 @@ class Comparator():
         # loop through the pages
         for original_page in self.obj_original:
             
-            if original_page not in obj_test:
+            if original_page not in dict_before:
                 raise error("Execution stopped! Page '" + str(original_page) + "' was not found in the JSON object.")
                 # or use continue for ignore the missing pages
 
@@ -179,7 +179,7 @@ class Comparator():
                 original_variable_def = original_variables[original_variable]
 
                 # check if the variable exists in the JSON
-                if original_variable not in obj_test[original_page][self.keyword]:
+                if original_variable not in dict_before[original_page][self.keyword]:
                     
                     self.failed += 1
 
@@ -189,8 +189,8 @@ class Comparator():
                         "error": 1
                     }
 
-                    if original_variable in obj_mapping:
-                        obj_result[original_page][self.keyword][original_variable]['variable_mapping'] = obj_mapping[original_variable]
+                    if original_variable in dict_after:
+                        obj_result[original_page][self.keyword][original_variable]['variable_mapping'] = dict_after[original_variable]
                     else:
                         obj_result[original_page][self.keyword][original_variable]['variable_mapping'] = '-'
 
@@ -198,12 +198,12 @@ class Comparator():
 
                 tested_variable_result = obj_result[original_page][self.keyword][original_variable]
 
-                if original_variable in obj_mapping:
-                    tested_variable_result['variable_mapping'] = obj_mapping[original_variable]
+                if original_variable in dict_after:
+                    tested_variable_result['variable_mapping'] = dict_after[original_variable]
                 else:
                     tested_variable_result['variable_mapping'] = '-'
                 
-                tested_variable = obj_test[original_page][self.keyword][original_variable]
+                tested_variable = dict_before[original_page][self.keyword][original_variable]
 
                 # if dict, then check the entries in the dictionary
                 if type(tested_variable) is not dict:
