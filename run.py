@@ -176,7 +176,6 @@ class TrackTracker:
 
         return request
 
-
     def analyse_result(self):
 
         self.df_results_analysed = pd.DataFrame()
