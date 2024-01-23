@@ -92,7 +92,7 @@ class TrackTracker:
         # which could be unexpected and hence unwanted
 
         if not os.path.exists('results'):
-            os.makedirs(directory)
+            os.makedirs('results')
     
         if mode == 'init' and focus is None:
 
