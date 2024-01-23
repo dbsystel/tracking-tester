@@ -377,6 +377,16 @@ class TrackTracker:
         try:
             self.driver.wait_for_request(self.adobe_analytics_host, 1)
         except:
+            
+            # Access requests via the `requests` attribute
+            for request in self.driver.requests:
+                if request.response:
+                    print(
+                        request.url,
+                        request.response.status_code,
+                        request.response.headers['Content-Type']
+                    )
+
             print(f'Could not find tracking container `{self.adobe_analytics_host}`on `{url}`, do you provided the correct container locations?')
             sys.exit()
 
