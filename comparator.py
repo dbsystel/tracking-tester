@@ -257,24 +257,3 @@ class Comparator():
                 tested_variable_result["error"] = 0
 
         return obj_result
-
-
-
-
-
-if __name__ == '__main__':
-    
-    with open("test.json") as jfile:
-        original = json.load(jfile)
-
-    with open("test_copy.json") as jfile:
-        test = json.load(jfile)
-
-    comparator = Comparator(original)
-    result = comparator.check_json(test)
-
-    print("##################### Comparator #####################")
-    print("\tTested: " + str(comparator.get_tested()) + " | Succeed: " + str(comparator.get_succeed()) + " | Failed: " + str(comparator.get_failed()) + "\n")
-    print("######################################################")
-    
-    print(str(result) + "\n")
