@@ -1,8 +1,6 @@
 # Copyright 2023 DB Systel GmbH
 # License Apache-2.0
 
-from os import error
-
 # This class parses JSON objects and compares variables in the predefined format.
 #
 # {

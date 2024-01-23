@@ -22,6 +22,15 @@ This is an example of the Excel result:
 
 ## Prerequisites ##
 
+### Python Dependencies
+```
+python3 -m venv .venv
+source .venv/bin/activate
+pip3 install -r requirements.txt
+```
+
+### Chrome
+
 This script uses the **Selenium** browser automation. It requires you to download the headless browser called "**Chrome driver**" from here: 
 
     https://chromedriver.chromium.org/downloads
