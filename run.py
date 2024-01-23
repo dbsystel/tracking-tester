@@ -352,9 +352,9 @@ class TrackTracker:
         self.driver.get(url)
 
         try:
-            self.driver.wait_for_request(self.adobe_analytics_host, 5)
+            self.driver.wait_for_request(self.adobe_analytics_host, 1)
         except:
-            print(f'Could not find tracking container on {url}, do you provided the correct container locations?')
+            print(f'Could not find tracking container `{self.adobe_analytics_host}`on `{url}`, do you provided the correct container locations?')
             sys.exit()
 
         # grace period to give the onsite script time to work
