@@ -106,7 +106,7 @@ class Compare():
 
                 # check if tested value is an allowed value
                 if pages_after[page_before]["variables"][var_before]["value"][0] not in pages_before[page_before]["variables"][var_before]["value"]:
-                        pages_before[page_before]["variables"][var_before]["message"] = f'The value of the variable is not included in the list of expected values: {pages_before[page_before]["variables"][var_before]["value"].join(", ")}'
+                        pages_before[page_before]["variables"][var_before]["message"] = f'The value of the variable is not included in the list of expected values: {", ".join(pages_before[page_before]["variables"][var_before]["value"])}'
                         pages_before[page_before]["variables"][var_before]["error"] = 1
                         continue
 
