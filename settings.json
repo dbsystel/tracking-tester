@@ -15,6 +15,58 @@
             "v6": "eVar 6 -  Some Dimension",
             "c11": "prop 11 - Another Dimension"
         }
-
+    },
+    "test": {
+        "adobe_launch_host" : "assets.adobedtm.com",
+        "adobe_analytics_host" : "dbsystelentities.d3.sc.omtrdc.net",
+        "container_before": "https://assets.adobedtm.com/3d2122476bde/2740bb4afc65/launch-aeea6394ddbd.min.js",
+        "container_after": "https://assets.adobedtm.com/3d2122476bde/2740bb4afc65/launch-42760594da97-staging.min.js",
+        "grace_period": 2,
+        "cookies": [{
+            "domain": "db.jobs",
+            "name": "cpi_adobe-analytics",
+            "value": "1"
+        }],
+        "urls" : {
+            "Frontpage": "https://db.jobs/de-de",
+            "Frontpage_UTM": "https://db.jobs/de-de?utm_source=test_utm_source&utm_medium=test_utm_medium&utm_campaign=test_utm_campaign&utm_term=test_utm_term&utm_content=test_utm_content",
+            "SERP_leer": "https://db.jobs/service/search/de-de/5441588?qli=true&query=&qli=true&sort=score&country=Deutschland",
+            "SERP_nicht_leer": "https://db.jobs/service/search/de-de/5441588?qli=true&query=Manager&sort=score&itemsPerPage=20&pageNum=0&country=Deutschland&location=Bamberg",
+            "Job_Ad": "https://db.jobs/de-de/Suche/Leistungsmanager-in-12505454?jobId=321088",
+            "Content": "https://db.jobs/de-de/dein-einstieg/schuelerpraktikum",
+            "Event_SERP": "https://db.jobs/service/search/de-de/9639412?qli=true&query=&qli=true&sort=eventDate_tdt+asc",
+            "Event_Ad": "https://db.jobs/de-de/Eventsuche/Lebenslauf-Check-DB-Jobwelt-Leipzig-9971954?eventId=183616&resultCount=54"
+        },
+        "mapping": {
+            "c": "Screen color depth",
+            "s": "Screen resolution",
+            "v6": "Jobs Viewed (v6, Last, Visit) (evar6)",
+            "c11": "Page Name",
+            "v11": "Page Name (v11, Last, Hit) (evar11)",
+            "c12": "Page Id (c12) (prop12)",
+            "c13": "Page Title (c13) (prop13)",
+            "c14": "Page URL w/o Query Strings (c14) (prop14)",
+            "v14": "Page URL w/o Query Strings (v14, Last, Hit) (evar14)",
+            "c15": "Page URL w/ Query Strings (c15) (prop15)",
+            "v15": "Page URL w/ Query Strings (v15, Last, Hit) (evar15)",
+            "c18": "Breadcrumb (c18) (prop18)",
+            "c27": "SUP Required Formfields (v27)",
+            "v27": "SUP Required Formfields (v27, Last, Visit)",
+            "c37": "Job Publication Date (c37) (prop37)",
+            "v37": "Job Publication Date (v37, Last, Visit) (evar37)",
+            "c51": "Launch Build Date",
+            "c52": "Launch Build System",
+            "c61": "Job Referral ID (c61) (prop61)",
+            "v61": "Job Referral ID (v61, Last, Visit) (evar61)",
+            "c62": "Job ID (c62) (prop62)",
+            "v62": "Job ID (v62, Last, Visit) (evar62)",
+            "c64": "Search Results (c64) (prop64)",
+            "v64": "Search Results (v64, Last, Visit) (evar64)",
+            "c65": "Additional Job Details (c65) (prop65)",
+            "v65": "Additional Job Details (v65, Last, Visit) (evar65)",
+            "c75": "PPV: Highest Percent / Initial Percent / Highest Pixel (c75) (prop75)",
+            "v75": "PPV: Highest Percent / Initial Percent / Highest Pixel (v75, Last, Hit) (evar75)",
+            "v127": "JobRegion (v127, Last, Visit) (evar127)"
+        }
     }
 }

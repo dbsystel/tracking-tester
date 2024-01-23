@@ -91,6 +91,9 @@ class TrackTracker:
         # this would overwrite existing result file
         # which could be unexpected and hence unwanted
 
+        if not os.path.exists('results'):
+            os.makedirs(directory)
+    
         if mode == 'init' and focus is None:
 
             self.init_driver(silent, mode)
