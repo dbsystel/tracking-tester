@@ -27,8 +27,8 @@ from importlib_metadata import abc
 
 class Comparator():
     
-    keyword = "variables"
-    obj_original: dict = {}
+    target_key = "variables"
+    pages: dict = {}
     
     defined: bool = False
 
@@ -36,29 +36,15 @@ class Comparator():
     failed: int = 0
 
     # The initialization of the class requires a dictionary.
-    def __init__(self, obj_original: dict) -> None:
+    def __init__(self, pages: dict) -> None:
 
-        self.define_original(obj_original)
+        self.define_original(pages)
 
     # The method passes the dictionary and checks if it 
     # contains the required variables and the correct format.
-    def define_original(self, obj_original: dict) -> None:
+    def define_original(self, pages: dict) -> None:
 
-        if self.check_json_format(obj_original) == True:
-
-            self.obj_original = obj_original
-            self.defined = True
-
-        else:
-
-            self.obj_original = None
-            self.defined = False
-            raise error("The JSON object could not be read in because the format is not passed as expected.")
-
-    # Returns a value of type boolean if the comparator object
-    # is initialized
-    def is_defined(self) -> bool:
-        return self.defined
+        self.pages = pages
 
     # Returns the number of tested pages from the last test 
     # run (call of the function check_json()).
@@ -75,11 +61,6 @@ class Comparator():
     def get_failed(self) -> int:
         return self.failed
 
-    # Static method which returns the type of an passed object.
-    @staticmethod
-    def check_type(obj) -> type:
-        return type(obj)
-
     # Static method which passes a value of type boolean if 
     # the object was defined correct.
     @staticmethod
@@ -92,91 +73,31 @@ class Comparator():
         
         return False
 
-    # The method checks that the given format of the JSON file 
-    # is correct and returns a boolean.
-    @staticmethod
-    def check_json_format(json: any, orginial: bool = False):
-
-        pages = json
-
-        if type(pages) is not dict:
-            raise error("[FormatCheck] JSON is not defined as dictionary. " + str(type(pages)))
-        
-        for page in pages:
-            if type(pages[page]) is not dict:
-                    raise error("[FormatCheck] Page '" + str(page) + "' is not defined as dictionary. " + str(type(pages[page])))
-    
-
-            if "variables" not in pages[page]:
-                raise error("[FormatCheck] There are no variable definitions for the page '" + str(page) + "'.")
-
-            
-            variables = pages[page][Comparator.keyword]
-            for variable in variables:
-
-                if type(pages[page][Comparator.keyword][variable]) is not dict:
-                    raise error("[FormatCheck] Variable '" + str(variable) + "' in page '" + str(page) + "' is not defined as dictionary. " + str(type(pages[page][variable])))
-    
-
-                if "value" not in pages[page][Comparator.keyword][variable]:
-                    raise error("[FormatCheck] Value in variable '" + str(variable) + "' in page '" + str(page) + "' is not defined.")
-    
-                _value = pages[page][Comparator.keyword][variable]["value"]
-                if type(_value) is not list:
-                    raise error("[FormatCheck] The type of value in variable '" + str(variable) + "' in page '" + str(page) + "' is not a list.")
-
-                if "type" not in pages[page][Comparator.keyword][variable]:
-                    raise error("[FormatCheck] Type in variable '" + str(variable) + "' in page '" + str(page) + "' is not defined.")
-    
-
-                _type = pages[page][Comparator.keyword][variable]["type"]
-                if _type != "int" and _type != "float" and _type != "str" and _type != "*":
-                    raise error("[FormatCheck] Value for type in variable '" + str(variable) + "' in page '" + str(page) + "' is not invalid. " + str(_type))
-    
-
-                if "length" not in pages[page]["variables"][variable]:
-                    raise error("[FormatCheck] Length in variable '" + str(variable) + "' in page '" + str(page) + "' is not defined.")
-    
-
-                if "required" not in pages[page]["variables"][variable]:
-                    raise error("[FormatCheck] Required in variable '" + str(variable) + "' in page '" + str(page) + "' is not defined.")
-    
-
-                _required = pages[page]["variables"][variable]["required"]
-                if _required is not True and _required is not False:
-                    raise error("[FormatCheck] Value for required in variable '" + str(variable) + "' in page '" + str(page) + "' is not invalid. " + str(_required))
-    
-
-        return True
-
     # Checks the passed JSON object for the correct format and 
     # then if the passed values match what is expected from 
     # the original JSON.
-    def check_json(self, dict_before, dict_after) -> dict:
+    def check_json(self, pages_before, pages_after) -> dict:
         
-        if self.check_json_format(dict_before) != True:
-            raise error("The test was not processed because the format of the test JSON is not passed as expected.")
-
-        obj_result = dict_before.copy()
+        obj_result = pages_before.copy()
 
         self.succeed = 0
         self.failed = 0
 
         # loop through the pages
-        for original_page in self.obj_original:
+        for original_page in self.pages:
             
-            if original_page not in dict_before:
+            if original_page not in pages_before:
                 raise error("Execution stopped! Page '" + str(original_page) + "' was not found in the JSON object.")
                 # or use continue for ignore the missing pages
 
-            original_variables = self.obj_original[original_page][self.keyword]
+            original_variables = self.pages[original_page][self.keyword]
             # loop through the adobe analytics variables
             for original_variable in original_variables:
                 
                 original_variable_def = original_variables[original_variable]
 
                 # check if the variable exists in the JSON
-                if original_variable not in dict_before[original_page][self.keyword]:
+                if original_variable not in pages_before[original_page][self.keyword]:
                     
                     self.failed += 1
 
@@ -186,8 +107,8 @@ class Comparator():
                         "error": 1
                     }
 
-                    if original_variable in dict_after:
-                        obj_result[original_page][self.keyword][original_variable]['variable_mapping'] = dict_after[original_variable]
+                    if original_variable in pages_after:
+                        obj_result[original_page][self.keyword][original_variable]['variable_mapping'] = pages_after[original_variable]
                     else:
                         obj_result[original_page][self.keyword][original_variable]['variable_mapping'] = '-'
 
@@ -195,12 +116,12 @@ class Comparator():
 
                 tested_variable_result = obj_result[original_page][self.keyword][original_variable]
 
-                if original_variable in dict_after:
-                    tested_variable_result['variable_mapping'] = dict_after[original_variable]
+                if original_variable in pages_after:
+                    tested_variable_result['variable_mapping'] = pages_after[original_variable]
                 else:
                     tested_variable_result['variable_mapping'] = '-'
                 
-                tested_variable = dict_before[original_page][self.keyword][original_variable]
+                tested_variable = pages_before[original_page][self.keyword][original_variable]
 
                 # if dict, then check the entries in the dictionary
                 if type(tested_variable) is not dict:
