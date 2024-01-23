@@ -1,10 +1,7 @@
 # Copyright 2023 DB Systel GmbH
 # License Apache-2.0
 
-from email import message
 from os import error
-
-from importlib_metadata import abc
 
 # This class parses JSON objects and compares variables in the predefined format.
 #

@@ -20,7 +20,7 @@ import argparse
 
 import pandas as pd
 
-from comparator import Comparator
+from compare import Compare
 
 # to read available width in terminal output
 from os import get_terminal_size
