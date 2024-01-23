@@ -274,6 +274,11 @@ class TrackTracker:
 
         self.var_mapping = settings['mapping']
 
+        if "cookies" in settings:
+            self.cookies = settings['cookies']
+        else:
+            self.cookies = None
+
         # keep those for later use: automatically parse a whole website?
         # self.urls_parsed = [] # a plain list of all urls to parse
         # self.urls_to_parse_next = [] # a plain list of all urls to be parsed
@@ -348,6 +353,24 @@ class TrackTracker:
         #     print(cookies)
         #     for cookie in cookies:
         #         driver.add_cookie(cookie)
+
+
+        # https://stackoverflow.com/a/63220249
+        # this enables network tracking, this allows us to set cookies before the actual request
+        # otherwise we could not place cookies in the websites domain
+        self.driver.execute_cdp_cmd('Network.enable', {})
+        
+        # set cookies before actual request is made
+        if self.cookies is not None:
+            for cookie in self.cookies:
+                self.driver.execute_cdp_cmd('Network.setCookie', {
+                    'name' : cookie['name'], 
+                    'value' : cookie['value'],
+                    'domain' : cookie['domain']
+                })
+
+        # this enables network tracking
+        self.driver.execute_cdp_cmd('Network.disable', {})
 
         self.driver.get(url)
 
