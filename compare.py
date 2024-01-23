@@ -23,112 +23,95 @@ from os import error
 
 class Compare():
     
-    target_key = "variables"
-    pages: dict = {}
+    def compare(self, 
+                pages_before: dict = None, 
+                pages_after: dict = None,
+                var_mapping: dict = None) -> dict:
 
-    def __init__(self, pages: dict) -> None:
+        """
+        Compare two sets of pages before and after a change, and generate a report.
 
-        self.pages = pages
+        This method takes two dictionaries representing pages before and after a change,
+        and an optional variable mapping dictionary for variable name translations.
 
-    # Checks the passed JSON object for the correct format and 
-    # then if the passed values match what is expected from 
-    # the original JSON.
-    def compare(self, pages_before, pages_after) -> dict:
+        Parameters:
+        - pages_before (dict): A dictionary representing pages before the change.
+        - pages_after (dict): A dictionary representing pages after the change.
+        - var_mapping (dict, optional): A dictionary mapping variable names for translation.
         
-        obj_result = pages_before.copy()
+        Returns:
+        - result (dict): A dictionary containing the comparison report with details of the changes.
 
-        self.succeed = 0
-        self.failed = 0
-
-        # loop through the pages
-        for original_page in self.pages:
+        Example:
+        ```
+        before = {'page1': {'var1': 10, 'var2': 20}, 'page2': {'var1': 5, 'var3': 15}}
+        after = {'page1': {'var1': 12, 'var2': 20}, 'page3': {'var4': 8}}
+        
+        comparer = PageComparer()
+        comparison_result = comparer.compare(pages_before=before, pages_after=after)
+        ```
+        """
             
-            if original_page not in pages_before:
-                raise error("Execution stopped! Page '" + str(original_page) + "' was not found in the JSON object.")
-                # or use continue for ignore the missing pages
-
-            original_variables = self.pages[original_page][self.keyword]
-            # loop through the adobe analytics variables
-            for original_variable in original_variables:
+        # loop through all pages from state "before"
+        for page_before in pages_before:
+            
+            # check if state "after" contains current page
+            if page_before not in pages_after:
+                pages_before[page_before] = {
+                            "message": f"Page `{page_before}`not found.",
+                            "error": 1
+                        }
+            
+            # loop through all variables from state "before"
+            for var_before in pages_before[page_before]["variables"]:
                 
-                original_variable_def = original_variables[original_variable]
-
-                # check if the variable exists in the JSON
-                if original_variable not in pages_before[original_page][self.keyword]:
+                # if exists, get variable mapping ("readable name")
+                if var_before in var_mapping:
+                    pages_before[page_before]["variables"][var_before]['variable_mapping'] = var_mapping[var_before]
                     
-                    self.failed += 1
-
-                    obj_result[original_page][self.keyword][original_variable] = {
-                        "value": [""],
-                        "message": "Test failed. Variable was not found in the list of variables.",
-                        "error": 1
-                    }
-
-                    if original_variable in pages_after:
-                        obj_result[original_page][self.keyword][original_variable]['variable_mapping'] = pages_after[original_variable]
-                    else:
-                        obj_result[original_page][self.keyword][original_variable]['variable_mapping'] = '-'
+                # check if the variable exists in state "after"
+                if var_before not in pages_after[page_before]["variables"]:
+                    
+                    pages_before[page_before]["variables"][var_before]['message'] = f"Variable `{var_before}` was not found."
+                    pages_before[page_before]["variables"][var_before]['error'] = 1
 
                     continue
-
-                tested_variable_result = obj_result[original_page][self.keyword][original_variable]
-
-                if original_variable in pages_after:
-                    tested_variable_result['variable_mapping'] = pages_after[original_variable]
-                else:
-                    tested_variable_result['variable_mapping'] = '-'
                 
-                tested_variable = pages_before[original_page][self.keyword][original_variable]
+                tested_variable = pages_before[page_before]["variables"][var_before]
 
                 # if dict, then check the entries in the dictionary
                 if type(tested_variable) is not dict:
-                    tested_variable_result["message"] = "Test failed. A dictionary was expected as a value for the key '" + str(original_variable) + "'."
-                    tested_variable_result["error"] = 1
+                    pages_before[page_before]["variables"][var_before]["message"] = "Test failed. A dictionary was expected as a value for the key '" + str(original_variable) + "'."
+                    pages_before[page_before]["variables"][var_before]["error"] = 1
                     continue
 
-                # check if value is required
-                if original_variable_def["required"] == False:
-                    self.succeed += 1
-                    tested_variable_result["message"] = "Test was successful."
-                    tested_variable_result["error"] = 0
+                # check if variable is mandatory/required
+                if pages_before[page_before]["variables"][var_before]["required"] == False:
+                    pages_before[page_before]["variables"][var_before]["message"] = "Not required."
+                    pages_before[page_before]["variables"][var_before]["error"] = 0
                     continue
 
                 # check if the variable type is defined and matches
-                if original_variable_def["type"] != "*":
-                    if original_variable_def["type"] != tested_variable["type"]:
-                        self.failed += 1
-                        tested_variable_result["message"] = "Test failed. The type of the variable does not match the expected type."
-                        tested_variable_result["error"] = 1
+                if pages_before[page_before]["variables"][var_before]["type"] != "*":
+                    if pages_before[page_before]["variables"][var_before]["type"] != pages_after[page_before]["variables"][var_before]["type"]:
+                        pages_before[page_before]["variables"][var_before]["message"] = f'The type of the variable does not match the expected type: {pages_before[page_before]["variables"][var_before]["type"]}'
+                        pages_before[page_before]["variables"][var_before]["error"] = 1
                         continue
 
                 # check if the variable length is defined and matches
-                if original_variable_def["length"] != -1:
-                    if original_variable_def["length"] != tested_variable["length"]:
+                if pages_before[page_before]["variables"][var_before]["length"] > 0:
+                    if pages_before[page_before]["variables"][var_before]["length"] != pages_before[page_before]["variables"][var_before]["length"]:
                         
-                        self.failed += 1
-                        tested_variable_result["message"] = "Test failed. The length of the variable does not match the expected length."
-                        tested_variable_result["error"] = 1
+                        pages_before[page_before]["variables"][var_before]["message"] = f'The length of the variable does not match the expected length: {pages_before[page_before]["variables"][var_before]["length"]}'
+                        pages_before[page_before]["variables"][var_before]["error"] = 1
                         continue
 
-                # check if tested value is part of allowed values
-                # if original list of allowed values is 0, every value is ok
-                if type(original_variable_def["value"]) is list and len(original_variable_def["value"]) > 0:
-                    # not necessary, it's always a list and it always contains 1 item only
-                    # if type(tested_variable["value"]) is list:
-                    #     test_value = tested_variable["value"][0]
-                    # else:
-                    #     test_value = tested_variable["value"]
-
-                    if tested_variable["value"][0] not in original_variable_def["value"]:
-                        
-                        self.failed += 1
-                        # TODO: add expected and actual value here
-                        tested_variable_result["message"] = "Test failed. The value of the variable is not included in the list of expected values."
-                        tested_variable_result["error"] = 1
+                # check if tested value is an allowed value
+                if pages_after[page_before]["variables"][var_before]["value"][0] not in pages_before[page_before]["variables"][var_before]["value"]:
+                        pages_before[page_before]["variables"][var_before]["message"] = f'The value of the variable is not included in the list of expected values: {pages_before[page_before]["variables"][var_before]["value"].join(", ")}'
+                        pages_before[page_before]["variables"][var_before]["error"] = 1
                         continue
 
-                self.succeed += 1
-                tested_variable_result["message"] = "Test was successful."
-                tested_variable_result["error"] = 0
+                pages_before[page_before]["variables"][var_before]["error"] = 0
 
-        return obj_result
+        return pages_before

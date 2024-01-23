@@ -132,7 +132,7 @@ class TrackTracker:
             if focus is not None:
                 self.original = {focus: self.original[focus]}
 
-            compare = Compare(self.original)
+            compare = Compare()
             
             # TODO: add stop_on_error flag to stop on every error, makes it easier to fix errors
             self.result = compare.compare(self.result, self.var_mapping)
