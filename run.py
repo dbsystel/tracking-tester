@@ -1,31 +1,32 @@
+#!
 # Copyright 2023 DB Systel GmbH
 # License Apache-2.0
 
 import time
-import sys, urllib3, os
-# from selenium import webdriver
+from datetime import datetime # date time handling
+import sys, os
+
+# selenium
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from seleniumwire import webdriver  # wrapper to get network requests from browser and also modify LaunchRequests in real time (https://stackoverflow.com/questions/31354352/selenium-how-to-inject-execute-a-javascript-in-to-a-page-before-loading-executi)
-import pickle # to save / load cookies
 from pathlib import Path # check if cookie dump exists
 from urllib.parse import urlparse, parse_qs, urldefrag # extract get parameters from url
-import json # export result
 
+import argparse # to get runtime arguments
+
+import pandas as pd # for export to Excel
+import json # for export to JSON
+
+from compare import Compare # small class to compare two dicts
+
+from os import get_terminal_size # get available width in terminal output
+
+# TODO: clean up unsued libs
 # modify requests before rendering of page https://stackoverflow.com/questions/31354352/selenium-how-to-inject-execute-a-javascript-in-to-a-page-before-loading-executi
-from lxml import html
-from lxml.etree import ParserError
-from lxml.html import builder
-
-import argparse
-
-import pandas as pd
-
-from comparator import Comparator
-
-# to read available width in terminal output
-from os import get_terminal_size
-
-from datetime import datetime
+# from lxml import html
+# from lxml.etree import ParserError
+# from lxml.html import builder
+#import pickle # to save / load cookies
 
 def get_real_type(string: str) -> str:
 
@@ -90,6 +91,9 @@ class TrackTracker:
         # this would overwrite existing result file
         # which could be unexpected and hence unwanted
 
+        if not os.path.exists('results'):
+            os.makedirs('results')
+    
         if mode == 'init' and focus is None:
 
             self.init_driver(silent, mode)
@@ -132,10 +136,12 @@ class TrackTracker:
             if focus is not None:
                 self.original = {focus: self.original[focus]}
 
-            comparator = Comparator(self.original)
+            compare = Compare()
             
             # TODO: add stop_on_error flag to stop on every error, makes it easier to fix errors
-            self.result = comparator.check_json(self.result, self.var_mapping)
+            self.result = compare.compare(pages_before=self.result, 
+                                          pages_after=self.original,
+                                          var_mapping=self.var_mapping)
 
             # don't create the excel output when focus page is defined
             if focus is None:
@@ -175,7 +181,6 @@ class TrackTracker:
             request.url = self.container_after
 
         return request
-
 
     def analyse_result(self):
 
@@ -274,6 +279,11 @@ class TrackTracker:
 
         self.var_mapping = settings['mapping']
 
+        if "cookies" in settings:
+            self.cookies = settings['cookies']
+        else:
+            self.cookies = None
+
         # keep those for later use: automatically parse a whole website?
         # self.urls_parsed = [] # a plain list of all urls to parse
         # self.urls_to_parse_next = [] # a plain list of all urls to be parsed
@@ -349,12 +359,40 @@ class TrackTracker:
         #     for cookie in cookies:
         #         driver.add_cookie(cookie)
 
+
+        # https://stackoverflow.com/a/63220249
+        # this enables network tracking, this allows us to set cookies before the actual request
+        # otherwise we could not place cookies in the websites domain
+        self.driver.execute_cdp_cmd('Network.enable', {})
+        
+        # set cookies before actual request is made
+        if self.cookies is not None:
+            for cookie in self.cookies:
+                self.driver.execute_cdp_cmd('Network.setCookie', {
+                    'name' : cookie['name'], 
+                    'value' : cookie['value'],
+                    'domain' : cookie['domain']
+                })
+
+        # this enables network tracking
+        self.driver.execute_cdp_cmd('Network.disable', {})
+
         self.driver.get(url)
 
         try:
-            self.driver.wait_for_request(self.adobe_analytics_host, 5)
+            self.driver.wait_for_request(self.adobe_analytics_host, 1)
         except:
-            print(f'Could not find tracking container on {url}, do you provided the correct container locations?')
+            
+            # Access requests via the `requests` attribute
+            for request in self.driver.requests:
+                if request.response:
+                    print(
+                        request.url,
+                        request.response.status_code,
+                        request.response.headers['Content-Type']
+                    )
+
+            print(f'Could not find tracking container `{self.adobe_analytics_host}`on `{url}`, do you provided the correct container locations?')
             sys.exit()
 
         # grace period to give the onsite script time to work
@@ -422,6 +460,7 @@ if __name__ == '__main__':
     args_parser.add_argument('--mode', dest='mode', required=False, type=str, default='test', choices=['test', 'init', 'analyse'], 
                         help='init: initially read the original state, test: compare original state and current state, analyse: analyse test status and create a report')
 
+    # TODO: improve/ease file handling, we don't need original/test folders, we can just assume them from env argument
     args_parser.add_argument('--original', dest='original', required=True, type=str,
                         help='filename that contains original tracked variables in JSON format')
 
