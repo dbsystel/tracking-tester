@@ -2,7 +2,6 @@
 # License Apache-2.0
 
 from email import message
-import json
 from os import error
 
 from importlib_metadata import abc
@@ -29,37 +28,10 @@ class Compare():
     
     target_key = "variables"
     pages: dict = {}
-    
-    defined: bool = False
 
-    succeed: int = 0
-    failed: int = 0
-
-    # The initialization of the class requires a dictionary.
     def __init__(self, pages: dict) -> None:
 
-        self.define_original(pages)
-
-    # The method passes the dictionary and checks if it 
-    # contains the required variables and the correct format.
-    def define_original(self, pages: dict) -> None:
-
         self.pages = pages
-
-    # Returns the number of tested pages from the last test 
-    # run (call of the function compare()).
-    def get_tested(self) -> int:
-        return (self.succeed + self.failed)
-
-    # Returns the number of successfully tested pages from 
-    # the last test run (call to compare() function).
-    def get_succeed(self) -> int:
-        return self.succeed
-    
-    # Returns the number of failed tested pages from the last 
-    # test run (call to compare() function).
-    def get_failed(self) -> int:
-        return self.failed
 
     # Checks the passed JSON object for the correct format and 
     # then if the passed values match what is expected from 
