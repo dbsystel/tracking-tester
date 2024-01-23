@@ -1,0 +1,19 @@
+{
+    "example_setup": {
+        "adobe_launch_host" : "assets.adobedtm.com",
+        "adobe_analytics_host" : "customer.d3.sc.omtrdc.net",
+        "container_before": "https://assets.adobedtm.com/launch-ABC123.min.js",
+        "container_after": "https://assets.adobedtm.com/launch-ABC123-development.min.js",
+        "output_filename": "status_quo.json",
+        "grace_period": 2,
+        "urls" : {
+            "Homepage": "https://example.com",
+            "Searchresults": "https://example.com/search/q=keyword",
+            "Content": "https://example.com/somecontent"
+        },        
+        "mapping": {
+            "v6": "eVar 6 -  Some Dimension",
+            "c11": "prop 11 - Another Dimension"
+        }
+    }
+}
