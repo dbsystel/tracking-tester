@@ -132,10 +132,10 @@ class TrackTracker:
             if focus is not None:
                 self.original = {focus: self.original[focus]}
 
-            comparator = Comparator(self.original)
+            compare = Compare(self.original)
             
             # TODO: add stop_on_error flag to stop on every error, makes it easier to fix errors
-            self.result = comparator.check_json(self.result, self.var_mapping)
+            self.result = compare.compare(self.result, self.var_mapping)
 
             # don't create the excel output when focus page is defined
             if focus is None:

@@ -25,7 +25,7 @@ from importlib_metadata import abc
 # }
 #
 
-class Comparator():
+class Compare():
     
     target_key = "variables"
     pages: dict = {}
@@ -47,36 +47,24 @@ class Comparator():
         self.pages = pages
 
     # Returns the number of tested pages from the last test 
-    # run (call of the function check_json()).
+    # run (call of the function compare()).
     def get_tested(self) -> int:
         return (self.succeed + self.failed)
 
     # Returns the number of successfully tested pages from 
-    # the last test run (call to check_json() function).
+    # the last test run (call to compare() function).
     def get_succeed(self) -> int:
         return self.succeed
     
     # Returns the number of failed tested pages from the last 
-    # test run (call to check_json() function).
+    # test run (call to compare() function).
     def get_failed(self) -> int:
         return self.failed
-
-    # Static method which passes a value of type boolean if 
-    # the object was defined correct.
-    @staticmethod
-    def check_defined(obj) -> bool:
-        if type(obj) is str and len(obj) > 0:
-            return True
-        
-        if (type(obj) is int or type(obj) is float) and obj != -1:
-            return True
-        
-        return False
 
     # Checks the passed JSON object for the correct format and 
     # then if the passed values match what is expected from 
     # the original JSON.
-    def check_json(self, pages_before, pages_after) -> dict:
+    def compare(self, pages_before, pages_after) -> dict:
         
         obj_result = pages_before.copy()
 
