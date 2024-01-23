@@ -1,10 +1,14 @@
 # MonitorTrackingCoverage
 
-**MonitorTrackingCoverage** is a Python script that allows you to compare to different states of tracking setups for a given set of web sites.
+**MonitorTrackingCoverage** is a Python script that allows you to compare to different states of tracking setups for web analytics for a given set of urls.
 
-This scripts reads all tracked variables from a given URL and puts the result in JSON format to a file. 
+## Use Case ##
 
-If you run the script at a later time, it will read all tracked variables and compare them to the original variables you read from the URL. The script will document all changes and put the result in JSON format to a file. It will also create an overview containing all scanned URL and put it into an Excel-file.
+Imagine you have implemented **Adobe Data Collection** (vulgo: Adobe Launch) and you changed a data element or a rule. Before you want to publish the changes to production, you want to check, if the changes somehow harm the current setup, e.g. if the changes will change how dimensions will be tracked. This script records tracked dimensions from two different development environments to help you to find any issues like that.
+
+It will read all tracked variables/dimensions from a given URL and a defined environment and puts the result to a JSON file. 
+
+After that it will read all variables/dimensions for another environment but the same URL and compare the tracked variables/dimensions to the previous result. You will receive a JSOn file and an Excel sheet with all changes and an output to the screen. 
 
 All files are placed in the subfolder **./results**.
 
